@@ -44,19 +44,24 @@ func main() {
 	//		fmt.Println("Nope nope nope")
 	//	}
 	//}
+	var a int = 3
+	b := float64(a)
+	fmt.Println(a / 4)
+	fmt.Println(b / 4)
+	fmt.Println(false && false)
 
-	for i := 10; i <= 100; i++ {
-		switch {
-		case i%4 == 0:
-			fmt.Println(i, " is dividable with 4.")
-		case i%4 == 1:
-			fmt.Println("Nope")
-		case i%4 == 2:
-			fmt.Println("Nope nope")
-		default:
-			fmt.Println("Nope nope nope")
-		}
-	}
+	//for i := 10; i <= 100; i++ {
+	//	switch {
+	//	case i%4 == 0:
+	//		fmt.Println(i, " is dividable with 4.")
+	//	case i%4 == 1:
+	//		fmt.Println("Nope")
+	//	case i%4 == 2:
+	//		fmt.Println("Nope nope")
+	//	default:
+	//		fmt.Println("Nope nope nope")
+	//	}
+	//}
 	//
 	//favSport := "read"
 	//switch favSport {

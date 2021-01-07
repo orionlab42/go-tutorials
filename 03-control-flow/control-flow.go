@@ -22,19 +22,23 @@ func main() {
 		}
 	}
 
-	switch {
-	case false:
-		fmt.Println("This should not print")
-	case (2 == 4):
-		fmt.Println("This should not print2")
-	case (3 == 3):
-		fmt.Println("This prints")
-		fallthrough
-	case (4 == 5):
-		fmt.Println("This prints2")
-		fallthrough
-	default:
-		fmt.Println("This is default")
+	if x := 42; x == 2 {
+		fmt.Println("Here is an initialisation statement.")
 	}
+
+	//switch {
+	//case false:
+	//	fmt.Println("This should not print")
+	//case (2 == 4):
+	//	fmt.Println("This should not print2")
+	//case (3 == 3):
+	//	fmt.Println("This prints")
+	//	fallthrough
+	//case (4 == 5):
+	//	fmt.Println("This prints2")
+	//	fallthrough
+	//default:
+	//	fmt.Println("This is default")
+	//}
 
 }
