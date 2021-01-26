@@ -1,7 +1,10 @@
 package main
 
-import "dog"
+import (
+	"fmt"
+	"github.com/annakallo/go-tutorials/12-documentation/dog"
+)
 
 func main() {
-	dog.Years(15)
+	fmt.Println(dog.Years(15))
 }
