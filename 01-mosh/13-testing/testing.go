@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/annakallo/go-tutorials/13-testing/acdc"
+	"github.com/annakallo/go-tutorials/01-mosh/13-testing/acdc"
 )
 
 func main() {
