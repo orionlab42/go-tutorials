@@ -215,3 +215,16 @@ func Fib(n int) int {
 // v, ok = <ch					// channel receive, produces an additional boolean
 // _, err = io.Copy(dst, src)	// discard byte count
 // _, ok = x.(T)				// check type but discard result
+
+//////////////////////////////////////////////////////////////////
+//2.4.2. Assignability
+// -Assignment statements, like above are an explicit form of assignment, but there are many places in a
+// program where an assignment occurs implicitly: ex. a function call implicitly assigns the argument
+// values to the corresponding parameter variables;
+// ex. of implicit assignment:  medals := []string{"gold", "silver", "bronze"}
+// -the assignment is legal only if the value is assignable to the type of the variable
+// -nil may be assigned to any variable of interface or reference type
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+//2.5 Type Declaration
