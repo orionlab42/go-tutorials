@@ -1,8 +1,9 @@
-package _2_program_structure
+package ch2_program_structure
 
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 )
@@ -228,3 +229,142 @@ func Fib(n int) int {
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 //2.5 Type Declaration
+// -A type declaration defines a new named type that has the same underlying type as an existing type. The named type
+// provides a way to separate different and perhaps incompatible uses of the underlying type so that they can’t be mixed unintentionally.
+// -syntax: type name underlying-type
+// -Type declarations most often appear at package level, where the named type is visible throughout the package, and if
+// the name is exported (it starts with an upper-case letter), it’s accessible from other packages as well.
+
+type Celsius float64
+type Fahrenheit float64
+
+const (
+	AbsoluteZeroC Celsius = -273.15
+	FreezingC     Celsius = 0
+	Boiling       Celsius = 100
+)
+
+func CToF(c Celsius) Fahrenheit { return Fahrenheit(c*9/5 + 32) }
+func FToC(f Fahrenheit) Celsius { return Celsius((f - 32) * 5 / 9) }
+
+// -This package defines two types, Celsius and Fahrenheit, for the two units of temperature. Even though  both have the
+// same underlying type, float64, they are not the same type, so they cannot be compared or combined in arithmetic expressions.
+
+var x = 3.5
+var y = Celsius(x)
+
+// - Celsius(t) and Fahrenheit(t) are explicit type conversions, not function calls.
+// - For every type T, there is a corresponding conversion operation T(x) that converts the value x
+// to type T. A conversion from one type to another is allowed if both have the same underlying
+// type, or if both are unnamed pointer types that point to variables of the same underlying type;
+// these conversions change the type but not the representation of the value.
+
+//var celsius Celsius
+//var fahrenheit Fahrenheit
+//fmt.Println(celsius == 0) // "true"
+//fmt.Println(fahrenheit >= 0) // "true"
+//fmt.Println(celsius == fahrenheit) // compile error: type mismatch
+//fmt.Println(celsius == Celsius(fahrenheit)) // "true"!
+
+//Named types also make it possible to define new behaviors for values of the type. These
+//behaviors are expressed as a set of functions associated with the type, called the type’s methods.
+
+func (c Celsius) String() string { return fmt.Sprintf("%g°C", c) }
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+//2.6 Packages and Files
+// Packages in Go serve the same purposes as libraries or modules in other languages, supporting
+// modularity, encapsulation, separate compilation, and reuse.
+
+// Packages also let us hide information by controlling which names are visible outside the package,
+// or exported. In Go, a simple rule governs which identifiers are exported and which are
+// not: exported identifiers start with an upper-case letter.
+
+// Package tempconv performs Celsius and Fahrenheit conversions. (**)
+//package tempconv
+//import "fmt"
+//type Celsius float64
+//type Fahrenheit float64
+//....
+
+// -The doc comment(**) immediately preceding the package declaration documents the
+// package as a whole. Conventionally, it should start with a summary sentence in the style
+// illustrated. Only one file in each package should have a package doc comment. Extensive doc
+// comments are often placed in a file of their own, conventionally called doc.go.
+
+//////////////////////////////////////////////////////////////////
+//2.6.1 Imports
+// -Within a Go program, every package is identified by a unique string called its import path.
+// These are the strings that appear in an import declaration.
+// -In addition to its import path, each package has a package name, which is the short (and not
+// necessarily unique) name that appears in its package declaration. By convention, a package’s
+// name matches the last segment of its import path.
+// -The import declaration binds a short name to the imported package that may be used to refer
+// to its contents throughout the file.
+// -By default, the short name is the package name but an import declaration may
+// specify an alternative name to avoid a conflict
+
+//////////////////////////////////////////////////////////////////
+//2.6.2 Package Initialization
+
+//Package initialization begins by initializing package-level variables in the order in which they
+//are declared, except that dependencies are resolved first:
+//var a = b + c // a initialized third, to 3
+//var b = f() // b initialized second, to 2, by calling f
+//var c = 1 // c initialized first, to 1
+//func f() int { return c + 1 }
+
+//func init() { /* ... */ }
+//-init functions can’t be called or referenced, but otherwise they are normal functions.
+//Within each file, init functions are automatically executed when the program starts, in the
+//order in which they are declared, like this we can initialize some variables, like tables of data
+
+//One package is initialized at a time, in the order of imports in the program, dependencies first,
+//Initialization proceeds from the bottom up; the main package is the last to be initialized. In
+//this manner, all packages are fully initialized before the application’s main function begins.
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+//2.7 Scope
+// -A declaration associates a name with a program entity, such as a function or a variable. The
+// scope of a declaration is the part of the source code where a use of the declared name refers to
+// that declaration.
+
+// -There is a lexical block for the entire source code, called the universe block; for each package; for each file; for each for, if,
+// and switch statement; for each case in a switch or select statement; and, of course, for each explicit syntactic block.
+// A declaration’s lexical block determines its scope, which may be large or small.
+
+// -The declarations of built-in types, functions, and constants like int, len, and true are in the universe
+// block and can be referred to throughout the entire program.
+
+// -If a name is declared in both an outer block and an inner block, the inner declaration will be found first. In that case, the
+// inner declaration is said to shadow or hide the outer one, making it inaccessible.
+
+//func f() {}
+//
+//func randomFunction() {
+//	f := "f"
+//	fmt.Println(f) // "f"; local var f shadows package level
+//}
+
+var cwd string
+
+func init() {
+	cwd, err := os.Getwd() // compile error: unused: cwd
+	if err != nil {
+		log.Fatalf("os.Getwd failed: %v", err)
+	}
+	log.Printf("Working directory = %s", cwd)
+}
+
+func init() {
+	var err error
+	cwd, err = os.Getwd()
+	if err != nil {
+		log.Fatalf("os.Getwd failed: %v", err)
+	}
+}
+
+// - By declaring err in a separate var declaration we avoid making the outer cwd inaccessible, if no the statement does
+// not update the package-level cwd variable as intended(in the first init)

@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	_2_program_structure "github.com/annakallo/go-tutorials/02-donovan-kernighan-book/02-program-structure"
+	ch2_program_structure "github.com/annakallo/go-tutorials/02-donovan-kernighan-book/ch2-program-structure"
 )
 
 type bum struct {
@@ -10,6 +10,9 @@ type bum struct {
 }
 
 func main() {
-	x := _2_program_structure.Gcd(15, 9)
+	x := ch2_program_structure.CToF(160)
+	y := ch2_program_structure.FToC(320)
 	fmt.Println(x)
+	fmt.Println(ch2_program_structure.Fahrenheit(y))
+	fmt.Println(x > ch2_program_structure.Fahrenheit(y))
 }
