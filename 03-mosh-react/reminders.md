@@ -556,10 +556,13 @@ class Counter extends Component {
 
 # 3.3 Multiple components in sync
 * New component tree:
-           App (we need to lift the state up, counters[], so that Navbar can access it too)
-    Navbar           Counters (passing counters[] to Counter via props)
-                      Counter
-    
+
+___________ **App**__________________(we need to lift the state up, counters[], so that Navbar can access it too)
+
+**Navbar**_______________ **Counters**____(passing counters[ ] to Counter via props)
+
+______________________**Counter**
+
 ```jsx
 // app file
 class App extends Component {
@@ -713,10 +716,14 @@ class Counters extends Component {
 # 3.5 Lifecycle hooks 
 
 * Lifecycle hooks - methods which allow us to hook into certain moments during the lifecycle of a component and do 
-  something
-* Phases:   Mount (only called once, when an instance of a component/class is created and inserted into the DOM) --> 3 lifecycle hooks: constructor, render, componentDidMount (these methods are called in order)
-            Update (happens when the state or props get changed) --> render, componentDidUpdate (these methods are called in order)
-            Unmount --> componentWillUnmount
+  something 
+
+Phases:   
+* Mount (only called once, when an instance of a component/class is created and inserted into the DOM) --> 3 lifecycle hooks: constructor, render, componentDidMount (these methods are called in order)
+            
+* Update (happens when the state or props get changed) --> render, componentDidUpdate (these methods are called in order)
+            
+* Unmount --> componentWillUnmount
 
 
 ```jsx
