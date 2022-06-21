@@ -827,4 +827,36 @@ class Counter extends Component {
 }
 
 ```
+
+# 3.6 Accessing the previous state when raising an event
+
+* https://www.youtube.com/watch?v=8KB3DHI-QbM&t=1791s    min.1:14
+* First we set the handle function to be directly the setState function, then in the child component, instead of
+  passing a simple argument, we pass an arrow function and with it access the state which we have before clicking and 
+  change it
+```jsx
+// home file
+const Home = (props) => {
+    const [darkMode, setDarkMode] = useState(false);
+    return (
+        <div className='container'>
+          <Header handleToggleDarkMode={setDarkMode}/>
+        </div>
+    );
+}
+export default Home;
+
+// header file
+const Header = ({ handleToggleDarkMode }) => {
+    return (
+        <div className='header'>
+            <h1>Notes</h1>
+            <button onClick={() => handleToggleDarkMode((previousDarkMode) => !previousDarkMode)} >Toggle Mode</button>
+        </div>
+    )
+}
+
+export default Header;
+
+```
             
