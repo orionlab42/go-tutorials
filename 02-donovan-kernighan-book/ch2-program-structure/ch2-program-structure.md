@@ -1,5 +1,6 @@
-Ch2 - Program Structure
------------------------
+#Ch2 - Program Structure
+
+***
 
 # 2.1 Names 
 * A name begins with a letter or an underscore and may have any number of additional letters, digits, and underscores.
@@ -58,7 +59,7 @@ func shortDeclaration(name string) error {
 
 * Keep in mind that := is a declaration, whereas = is an assignment.
 * One subtle but important point: a short variable declaration does not necessarily declare all the variables on its 
-left-hand side. If some of them were already declared in the same lexical block,then the short variable declaration acts 
+left-hand side. If some of them were already declared in the same lexical block, then the short variable declaration acts 
 like an assignment to those variables.
 
 #2.3.2 Pointers
@@ -174,205 +175,215 @@ func lifetimeVariablesF() {
 * Must be heap-al located because it is still reachable from the variable global after lifetimeVariablesF() has returned,
 despite being declared as a local variable; we say x escapes from lifetimeVariablesF function
 
+```go
 func lifetimeVariablesG() {
-y := new(int)
-*y = 1
+    y := new(int)
+    *y = 1
 }
+```
 
-// -by contrast when lifetimeVariablesG() returns, the variable *y becomes unreachable and can be recycled
-// -Since *y does not escape from lifetimeVariablesG(), it’s safe for the compiler to allocate *y on the stack, even though it
-// was allocated with new.
-// -it’s good to keep in mind dur ing performance optimization, since each variable that escapes requires an extra memory allocation
+* By contrast when lifetimeVariablesG() returns, the variable *y becomes unreachable and can be recycled.
+* Since *y does not escape from lifetimeVariablesG(), it’s safe for the compiler to allocate *y on the stack, even though it
+was allocated with new.
+* It’s good to keep in mind during performance optimization, since each variable that escapes requires an extra memory allocation
+* Keeping unnecessary pointers to short-lived objects within long-lived objects, especially global variables, will prevent
+the garbage collector from reclaiming the short-lived objects.
 
-// -keeping unnecessary pointers to short-lived objects within long-lived objects, especially global variables, will prevent
-// the garbage collector from reclaiming the short-lived objects.
+#2.4 Assignments
+* Ex:
+```go
+count[x] *= scale
+v++		// same as v = v + 1; v becomes 2
+v--		// same as v = v 1; v becomes 1 again
+```
 
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
-//2.4 Assignments
-// -ex:
-// count[x] *= scale
-// v++		// same as v = v + 1; v becomes 2
-// v--		// same as v = v 1; v becomes 1 again
+#2.4.1. Tuple Assignment
+```go
+x, y = y, x
+a[i], a[j] = a[j], a[i]
+```
 
-//////////////////////////////////////////////////////////////////
-//2.4.1. Tuple Assignment
-//	x, y = y, x
-//	a[i], a[j] = a[j], a[i]
+* When computing the greatest common divisor (GCD) of two integers:
 
-// -when computing the greatest common divisor (GCD) of two integers:
-
+```go
 func Gcd(x, y int) int {
-for y != 0 {
-x, y = y, x%y
-}
-return x
+    for y != 0 {
+        x, y = y, x%y
+    }
+    return x
 }
 
 func Fib(n int) int {
-x, y := 0, 1
-for i := 0; i < n; i++ {
-x, y = y, x+y
+    x, y := 0, 1
+    for i := 0; i < n; i++ {
+        x, y = y, x+y
+    }
+    return x
 }
-return x
-}
+```
 
-// -Examples:
-// f, err = os.Open("foo.txt")	// function call returns two values
-// v, ok = m[key]				// map lookup, produces an additional boolean
-// v, ok = x.(T)				// type assertion, produces an additional boolean
-// v, ok = <ch					// channel receive, produces an additional boolean
-// _, err = io.Copy(dst, src)	// discard byte count
-// _, ok = x.(T)				// check type but discard result
+* Examples:
+```go
+f, err = os.Open("foo.txt")	// function call returns two values
+v, ok = m[key]				// map lookup, produces an additional boolean
+v, ok = x.(T)				// type assertion, produces an additional boolean
+v, ok = <ch					// channel receive, produces an additional boolean
+_, err = io.Copy(dst, src)	// discard byte count
+_, ok = x.(T)				// check type but discard result
+```
 
-//////////////////////////////////////////////////////////////////
-//2.4.2. Assignability
-// -Assignment statements, like above are an explicit form of assignment, but there are many places in a
-// program where an assignment occurs implicitly: ex. a function call implicitly assigns the argument
-// values to the corresponding parameter variables;
-// ex. of implicit assignment:  medals := []string{"gold", "silver", "bronze"}
-// -the assignment is legal only if the value is assignable to the type of the variable
-// -nil may be assigned to any variable of interface or reference type
+#2.4.2. Assignability
+* Assignment statements, like above are an explicit form of assignment, but there are many places in a
+program where an assignment occurs implicitly: ex. a function call implicitly assigns the argument
+values to the corresponding parameter variables;
+* Ex. of implicit assignment:  `medals := []string{"gold", "silver", "bronze"}`
+* The assignment is legal only if the value is assignable to the type of the variable
+* Nil may be assigned to any variable of interface or reference type
 
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
-//2.5 Type Declaration
-// -A type declaration defines a new named type that has the same underlying type as an existing type. The named type
-// provides a way to separate different and perhaps incompatible uses of the underlying type so that they can’t be mixed unintentionally.
-// -syntax: type name underlying-type
-// -Type declarations most often appear at package level, where the named type is visible throughout the package, and if
-// the name is exported (it starts with an upper-case letter), it’s accessible from other packages as well.
+#2.5 Type Declaration
+* A type declaration defines a new named type that has the same underlying type as an existing type. The named type
+provides a way to separate different and perhaps incompatible uses of the underlying type so that they can’t be mixed unintentionally.
+* Syntax: **type name underlying-type**
+* Type declarations most often appear at package level, where the named type is visible throughout the package, and if
+the name is exported (it starts with an upper-case letter), it’s accessible from other packages as well.
 
+```go
 type Celsius float64
 type Fahrenheit float64
 
 const (
-AbsoluteZeroC Celsius = -273.15
-FreezingC     Celsius = 0
-Boiling       Celsius = 100
+    AbsoluteZeroC Celsius = -273.15
+    FreezingC     Celsius = 0
+    Boiling       Celsius = 100
 )
 
 func CToF(c Celsius) Fahrenheit { return Fahrenheit(c*9/5 + 32) }
 func FToC(f Fahrenheit) Celsius { return Celsius((f - 32) * 5 / 9) }
+```
+* This package defines two types, Celsius and Fahrenheit, for the two units of temperature. Even though  both have the
+same underlying type, float64, they are not the same type, so they cannot be compared or combined in arithmetic expressions.
 
-// -This package defines two types, Celsius and Fahrenheit, for the two units of temperature. Even though  both have the
-// same underlying type, float64, they are not the same type, so they cannot be compared or combined in arithmetic expressions.
-
+```go
 var x = 3.5
 var y = Celsius(x)
+```
 
-// - Celsius(t) and Fahrenheit(t) are explicit type conversions, not function calls.
-// - For every type T, there is a corresponding conversion operation T(x) that converts the value x
-// to type T. A conversion from one type to another is allowed if both have the same underlying
-// type, or if both are unnamed pointer types that point to variables of the same underlying type;
-// these conversions change the type but not the representation of the value.
+* Celsius(t) and Fahrenheit(t) are explicit type conversions, not function calls.
+* For every type T, there is a corresponding conversion operation T(x) that converts the value x
+to type T. A conversion from one type to another is allowed if both have the same underlying
+type, or if both are unnamed pointer types that point to variables of the same underlying type;
+these conversions change the type but not the representation of the value.
 
-//var celsius Celsius
-//var fahrenheit Fahrenheit
-//fmt.Println(celsius == 0) // "true"
-//fmt.Println(fahrenheit >= 0) // "true"
-//fmt.Println(celsius == fahrenheit) // compile error: type mismatch
-//fmt.Println(celsius == Celsius(fahrenheit)) // "true"!
+```go
+var celsius Celsius
+var fahrenheit Fahrenheit
+fmt.Println(celsius == 0) // "true"
+fmt.Println(fahrenheit >= 0) // "true"
+fmt.Println(celsius == fahrenheit) // compile error: type mismatch
+fmt.Println(celsius == Celsius(fahrenheit)) // "true"!
+```
+* Named types also make it possible to define new behaviors for values of the type. These
+behaviors are expressed as a set of functions associated with the type, called the type’s methods.
 
-//Named types also make it possible to define new behaviors for values of the type. These
-//behaviors are expressed as a set of functions associated with the type, called the type’s methods.
-
+```go
 func (c Celsius) String() string { return fmt.Sprintf("%g°C", c) }
+```
 
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
-//2.6 Packages and Files
-// Packages in Go serve the same purposes as libraries or modules in other languages, supporting
-// modularity, encapsulation, separate compilation, and reuse.
+#2.6 Packages and Files
+* Packages in Go serve the same purposes as libraries or modules in other languages, supporting
+modularity, encapsulation, separate compilation, and reuse.
 
-// Packages also let us hide information by controlling which names are visible outside the package,
-// or exported. In Go, a simple rule governs which identifiers are exported and which are
-// not: exported identifiers start with an upper-case letter.
+* Packages also let us hide information by controlling which names are visible outside the package,
+or exported. In Go, a simple rule governs which identifiers are exported and which are
+not: exported identifiers start with an upper-case letter.
 
-// Package tempconv performs Celsius and Fahrenheit conversions. (**)
-//package tempconv
-//import "fmt"
-//type Celsius float64
-//type Fahrenheit float64
-//....
+```go
+Package tempconv performs Celsius and Fahrenheit conversions. (**)
+package tempconv
 
-// -The doc comment(**) immediately preceding the package declaration documents the
-// package as a whole. Conventionally, it should start with a summary sentence in the style
-// illustrated. Only one file in each package should have a package doc comment. Extensive doc
-// comments are often placed in a file of their own, conventionally called doc.go.
+import "fmt"
 
-//////////////////////////////////////////////////////////////////
-//2.6.1 Imports
-// -Within a Go program, every package is identified by a unique string called its import path.
-// These are the strings that appear in an import declaration.
-// -In addition to its import path, each package has a package name, which is the short (and not
-// necessarily unique) name that appears in its package declaration. By convention, a package’s
-// name matches the last segment of its import path.
-// -The import declaration binds a short name to the imported package that may be used to refer
-// to its contents throughout the file.
-// -By default, the short name is the package name but an import declaration may
-// specify an alternative name to avoid a conflict
+type Celsius float64
+type Fahrenheit float64
+....
+```
+* The doc comment(**) immediately preceding the package declaration documents the
+package as a whole. Conventionally, it should start with a summary sentence in the style
+illustrated. Only one file in each package should have a package doc comment. Extensive doc
+comments are often placed in a file of their own, conventionally called doc.go.
 
-//////////////////////////////////////////////////////////////////
-//2.6.2 Package Initialization
+#2.6.1 Imports
+* Within a Go program, every package is identified by a unique string called its import path.
+These are the strings that appear in an import declaration.
+* In addition to its import path, each package has a package name, which is the short (and not
+necessarily unique) name that appears in its package declaration. By convention, a package’s
+name matches the last segment of its import path.
+* The import declaration binds a short name to the imported package that may be used to refer
+to its contents throughout the file.
+* By default, the short name is the package name but an import declaration may
+specify an alternative name to avoid a conflict
 
-//Package initialization begins by initializing package-level variables in the order in which they
-//are declared, except that dependencies are resolved first:
-//var a = b + c // a initialized third, to 3
-//var b = f() // b initialized second, to 2, by calling f
-//var c = 1 // c initialized first, to 1
-//func f() int { return c + 1 }
+#2.6.2 Package Initialization
 
-//func init() { /* ... */ }
-//-init functions can’t be called or referenced, but otherwise they are normal functions.
-//Within each file, init functions are automatically executed when the program starts, in the
-//order in which they are declared, like this we can initialize some variables, like tables of data
+* Package initialization begins by initializing package-level variables in the order in which they
+are declared, except that dependencies are resolved first:
+```go
+var a = b + c // a initialized third, to 3
+var b = f() // b initialized second, to 2, by calling f
+var c = 1 // c initialized first, to 1
+func f() int { return c + 1 }
 
-//One package is initialized at a time, in the order of imports in the program, dependencies first,
-//Initialization proceeds from the bottom up; the main package is the last to be initialized. In
-//this manner, all packages are fully initialized before the application’s main function begins.
+func init() { /* ... */ }
+```
+* init functions can’t be called or referenced, but otherwise they are normal functions.
+* Within each file, init functions are automatically executed when the program starts, in the
+order in which they are declared, like this we can initialize some variables, like tables of data
 
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
-//2.7 Scope
-// -A declaration associates a name with a program entity, such as a function or a variable. The
-// scope of a declaration is the part of the source code where a use of the declared name refers to
-// that declaration.
+* One package is initialized at a time, in the order of imports in the program, dependencies first,
+initialization proceeds from the bottom up; the main package is the last to be initialized. In
+this manner, all packages are fully initialized before the application’s main function begins.
 
-// -There is a lexical block for the entire source code, called the universe block; for each package; for each file; for each for, if,
-// and switch statement; for each case in a switch or select statement; and, of course, for each explicit syntactic block.
-// A declaration’s lexical block determines its scope, which may be large or small.
+#2.7 Scope
+* A declaration associates a name with a program entity, such as a function or a variable. The
+scope of a declaration is the part of the source code where a use of the declared name refers to
+that declaration.
 
-// -The declarations of built-in types, functions, and constants like int, len, and true are in the universe
-// block and can be referred to throughout the entire program.
+* There is a lexical block for the entire source code, called the universe block; for each package; for each file; for each for, if,
+and switch statement; for each case in a switch or select statement; and, of course, for each explicit syntactic block.
+* A declaration’s lexical block determines its scope, which may be large or small.
 
-// -If a name is declared in both an outer block and an inner block, the inner declaration will be found first. In that case, the
-// inner declaration is said to shadow or hide the outer one, making it inaccessible.
+* The declarations of built-in types, functions, and constants like int, len, and true are in the universe
+block and can be referred to throughout the entire program.
 
-//func f() {}
-//
-//func randomFunction() {
-//	f := "f"
-//	fmt.Println(f) // "f"; local var f shadows package level
-//}
+* If a name is declared in both an outer block and an inner block, the inner declaration will be found first. In that case, the
+inner declaration is said to shadow or hide the outer one, making it inaccessible.
+
+```go
+func f() {}
+
+func randomFunction() {
+	f := "f"
+	fmt.Println(f) // "f"; local var f shadows package level
+}
 
 var cwd string
 
 func init() {
-cwd, err := os.Getwd() // compile error: unused: cwd
-if err != nil {
-log.Fatalf("os.Getwd failed: %v", err)
-}
-log.Printf("Working directory = %s", cwd)
+    cwd, err := os.Getwd() // compile error: unused: cwd
+    if err != nil {
+        log.Fatalf("os.Getwd failed: %v", err)
+    }
+    log.Printf("Working directory = %s", cwd)
 }
 
 func init() {
-var err error
-cwd, err = os.Getwd()
-if err != nil {
-log.Fatalf("os.Getwd failed: %v", err)
+    var err error
+    cwd, err = os.Getwd()
+    if err != nil {
+        log.Fatalf("os.Getwd failed: %v", err)
+    }
 }
-}
+```
 
-// - By declaring err in a separate var declaration we avoid making the outer cwd inaccessible, if no the statement does
-// not update the package-level cwd variable as intended(in the first init)
+* By declaring err in a separate var declaration we avoid making the outer cwd inaccessible, if no the statement does
+not update the package-level cwd variable as intended(in the first init)
